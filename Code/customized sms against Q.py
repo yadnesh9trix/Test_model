@@ -14,41 +14,53 @@ last_day_fmt = last_day.strftime("%d%m%Y")
 
 tday  = today.strftime("%d%b%Y")
 
+
+def paidamount_data(paidamount_file, last_dmyfmt):
+    ## Read YTD data
+    ytddata = pd.read_excel(paidamount_file + f"Paidamount_list_{last_dmyfmt}.xlsx")
+    ## Replace the property code values in ytd data
+    ytddata["propertycode"] = ytddata["propertycode"].replace("1100900002.10.10", "1100900002.20")
+    ytddata['propertycode'] = ytddata['propertycode'].astype(float)
+    ytddata.dropna(subset=['propertycode'], how='all', inplace=True)
+    ytddata1 = ytddata.sort_values('receiptdate')
+    ytddata1 = ytddata1.groupby(['propertycode']).agg({'receiptdate': 'last', 'paidamount': 'sum'}).reset_index()
+    ytddata1 = ytddata1.rename(
+        columns={'receiptdate': 'This Year Paiddate'})
+    ytddata1 = ytddata1[['propertycode', 'This Year Paiddate']]
+    ytddata1['paidTY_Flag'] = 1
+    return ytddata1
+
+def lastyear_paid(inppath):
+    lypaid = pd.read_csv(inppath + "Paid_amount 2022-04-01 To 2023-03-31.csv")
+    lypaid["propertycode"] = lypaid["propertycode"].replace("1100900002.10.10", "1100900002.20")
+    lypaid['propertycode'] = lypaid['propertycode'].astype(float)
+    lypaid = lypaid.rename(columns={'receiptdate': 'last payment date'})
+    lypaid.dropna(subset=['propertycode'], how='all', inplace=True)
+    lypaid = lypaid.rename(columns={'receiptdate': 'last payment date','paidamount':'last payment amount'})
+    lypaid = lypaid[['propertycode', 'last payment date', 'last payment amount']]
+    lypaid1 = lypaid.sort_values('last payment date')
+    lypaid1 = lypaid1.groupby(['propertycode']).agg({'last payment date': 'last', 'last payment amount': 'sum'}).reset_index()
+
+    return lypaid1
+
+def convert_mobilefmt(df, col_name):
+    try:
+        df[col_name] = df[col_name].str.extract(r'(\d{10})')
+    except:
+        pass
+    df[col_name] = df[col_name].fillna(0000000000).astype("int64")
+    df[col_name] = np.where((df[col_name] > 5999999999)
+                            & (df[col_name] <= 9999999999),
+                            df[col_name], np.nan)
+    return df
+
+
 def Q1234_JaptiAgainstSMS(inppath,paidamount_path,outpth):
 
     df = pd.read_excel(inppath + "DefaultersList-19July23.xlsx")
     df['propertycode'] = df['propertycode'].astype(float)
 
-    def paidamount_data(paidamount_file,last_dmyfmt):
-        ## Read YTD data
-        ytddata = pd.read_excel(paidamount_file + f"Paidamount_list_{last_dmyfmt}.xlsx")
-        ## Replace the property code values in ytd data
-        ytddata["propertycode"] = ytddata["propertycode"].replace("1100900002.10.10", "1100900002.20")
-        ytddata['propertycode'] = ytddata['propertycode'].astype(float)
-        ytddata.dropna(subset=['propertycode'], how='all', inplace=True)
-        ytddata1 = ytddata.sort_values('receiptdate')
-        ytddata1 = ytddata1.groupby(['propertycode']).agg({'receiptdate': 'last', 'paidamount': 'sum'}).reset_index()
-
-        ytddata1 = ytddata1.rename(
-            columns={'receiptdate': 'This Year Paiddate'})
-        ytddata1 = ytddata1[['propertycode', 'This Year Paiddate']]
-        ytddata1['paidTY_Flag'] = 1
-        return ytddata1
-
     typaid = paidamount_data(paidamount_path,last_day_fmt)
-
-    def lastyear_paid(inppath):
-        lypaid = pd.read_csv(inppath + "Paid_amount 2022-04-01 To 2023-03-31.csv")
-        lypaid["propertycode"] = lypaid["propertycode"].replace("1100900002.10.10", "1100900002.20")
-        lypaid['propertycode'] = lypaid['propertycode'].astype(float)
-        lypaid = lypaid.rename(columns={'receiptdate': 'last payment date'})
-        lypaid.dropna(subset=['propertycode'], how='all', inplace=True)
-        lypaid = lypaid.rename(columns={'receiptdate': 'last payment date','paidamount':'last payment amount'})
-        lypaid = lypaid[['propertycode', 'last payment date', 'last payment amount']]
-        lypaid1 = lypaid.sort_values('last payment date')
-        lypaid1 = lypaid1.groupby(['propertycode']).agg({'last payment date': 'last', 'last payment amount': 'sum'}).reset_index()
-
-        return lypaid1
 
     ly_paid =  lastyear_paid(inppath)
     df_lypaid = df.merge(ly_paid,on='propertycode',how='left')
@@ -57,17 +69,6 @@ def Q1234_JaptiAgainstSMS(inppath,paidamount_path,outpth):
     df_lypaid['Quarter'] = pd.PeriodIndex(df_lypaid['last payment date'],freq="Q-Mar").strftime("Q%q")
 
     df_lypaid['Quarter'] = np.where(pd.isna(df_lypaid['Quarter']), 'defaulter', df_lypaid['Quarter'])
-
-    def convert_mobilefmt(df, col_name):
-        try:
-            df[col_name] = df[col_name].str.extract(r'(\d{10})')
-        except:
-            pass
-        df[col_name] = df[col_name].fillna(0000000000).astype("int64")
-        df[col_name] = np.where((df[col_name] > 5999999999)
-                                & (df[col_name] <= 9999999999),
-                                df[col_name], np.nan)
-        return df
 
     cleaned_data = convert_mobilefmt(df_lypaid, 'mobileno')
 

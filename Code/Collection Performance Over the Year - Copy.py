@@ -24,10 +24,7 @@ if __name__ == '__main__':
     inppath = std_path + "Input/"
     paidamount_folder = main_path + "Paidamount/"
     outpth = std_path + "OutPut/" + tday + "/"
-    if os.path.exists(outpth):
-        pass
-    else:
-        os.mkdir(outpth)
+    os.makedirs(outpth,exist_ok=True)
 
 def Ty_paid(paidamount_folder,last_day_fmt):
     typaid = pd.read_excel(paidamount_folder + f"Paidamount_list_{last_day_fmt}.xlsx")
@@ -99,10 +96,11 @@ for i in yr:
     df_filtered = finYr2023_24[finYr2023_24['receiptdate'] <= datetime(i, int(td_month), int(td_date))]
     df_filtered['Financial_Year'] = f"{i}-{i + 1}"
     df_filtered['STLY_Date'] = datetime(i, int(td_month), int(td_date))
-    grpbydf = df_filtered.groupby(['Financial_Year', 'ezname', 'STLY_Date']).agg(
+    grpbydf = df_filtered.groupby(['Financial_Year', 'ezname', 'STLY_Date','fin_year_r']).agg(
         {'propertycode': 'count', 'paidamount': 'sum'}).reset_index()
     lll.append(grpbydf)
 
 ddd1 = pd.DataFrame(pd.concat(lll))
+ddd1['percentage_growth'] = ddd1.groupby('fin_year_r')['paidamount'].pct_change() * 100
 
 ddd1.to_excel(outpth + "L5Y_Collection.xlsx", index=False)
