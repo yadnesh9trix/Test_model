@@ -32,7 +32,7 @@ def save_to_excel(subjects, output_file):
 if __name__ == "__main__":
     # Replace these variables with your email credentials
     email_address = 'yadnesh.kolhe@foxberry.in'
-    password = 'Kolhe@4321'
+    password = 'xxxxxxxx'
     imap_server = 'outlook.office365.com'
 
     output_file = 'email_subjects.xlsx'
