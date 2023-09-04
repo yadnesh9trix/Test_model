@@ -73,3 +73,4 @@ df1_filter.to_excel(outpth + "ContactNo_17032023 (0 Arrears).xlsx",index=False)
 
 # res = pd.wide_to_long(df, stubnames=['Value'], i='name', j='Date').reset_index()\
 #         .sort_values(['location', 'name'])
+

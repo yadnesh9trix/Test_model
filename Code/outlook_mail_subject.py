@@ -14,8 +14,8 @@ def get_outlook_inbox_subjects():
     # emails = inbox.Items
 
     # Filter emails received today
-    start_date = "2023-07-31"  # Replace with your desired start date and time (00:00:00 for the start of the day)
-    end_date = "2023-07-31"
+    start_date = "2023-08-01"  # Replace with your desired start date and time (00:00:00 for the start of the day)
+    end_date = "2023-08-31"
 
     # Use the Items collection and filter emails within the specified date range
     start_datetime = datetime.datetime.strptime(start_date, '%Y-%m-%d')
@@ -23,7 +23,7 @@ def get_outlook_inbox_subjects():
     # Format dates as mm/dd/yyyy hh:mm AM/PM
     # Format datetime objects to match ReceivedTime format
     start_datetime_str = start_datetime.strftime('%d/%m/%Y %H:%M %p')
-    end_datetime_str = end_datetime.strftime('%d/%m/%Y 11:59 PM')
+    end_datetime_str = end_datetime.strftime('%d/%m/%Y %H:%M %p')
 
     # Filter emails using ReceivedTime with timezone information
     emails = inbox.Items.Restrict("[ReceivedTime] >= '" + start_datetime_str + "' AND [ReceivedTime] <= '" + end_datetime_str + "'")

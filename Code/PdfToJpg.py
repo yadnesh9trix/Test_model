@@ -27,13 +27,13 @@ if __name__ == '__main__':
     else:
         os.mkdir(outpth)
 
-pth = inppath + "अंतर्गत निर्देश, मालमत्ता कर.pdf"
+pth = inppath + "PtaxEaseofLiving290723-1.pdf"
+# pth = inppath + "Ptax Activites.pdf"
 
-# pages = convert_from_path(pth,500,poppler_path="C:\Program Files\poppler-23.05.0\Library/bin")
-#
-# for i in range(len(pages)):
-#     pages[i].save(outpth + 'Dashboard_'+ str(i) +'.jpg', 'JPEG')
-#
+pages = convert_from_path(pth,500,poppler_path="C:\Program Files\poppler-23.05.0\Library/bin")
+
+for i in range(len(pages)):
+    pages[i].save(outpth +  str(i) +'.jpg', 'JPEG')
 
 
 # from pdf2docx import parse
@@ -42,25 +42,25 @@ pth = inppath + "अंतर्गत निर्देश, मालमत्
 # parse(pth, word_file, start=0, end=None)
 
 #------------------------------------------------------------------------------------------------
-from pdf2docx import parse
-from typing import Tuple
+# from pdf2docx import parse
+# from typing import Tuple
+#
+# def convert_pdf2docs(input_file :str, output_file : str, pages: Tuple = None):
+#
+#     if pages:
+#         pages = [int(i) for i in list(pages) if i.isnumeric()]
+#     result = parse(pdf_file=input_file,
+#                    docx_file= output_file, pages=pages)
+#
+#     summary = {
+#         "File" : input_file, "Pages": str(pages), "Output File": output_file
+#     }
+#
+#     print("## Summary #########################################################")
+#     print("\n".join("{}:{}".format(i, j) for i , j in summary.items()))
+#     print("#####################################################################")
+#     return result
 
-def convert_pdf2docs(input_file :str, output_file : str, pages: Tuple = None):
-
-    if pages:
-        pages = [int(i) for i in list(pages) if i.isnumeric()]
-    result = parse(pdf_file=input_file,
-                   docx_file= output_file, pages=pages)
-
-    summary = {
-        "File" : input_file, "Pages": str(pages), "Output File": output_file
-    }
-
-    print("## Summary #########################################################")
-    print("\n".join("{}:{}".format(i, j) for i , j in summary.items()))
-    print("#####################################################################")
-    return result
-
-
-output_file = "test20230712.docx"
-convert_pdf2docs(pth, output_file)
+#
+# output_file = "test20230712.docx"
+# convert_pdf2docs(pth, output_file)
