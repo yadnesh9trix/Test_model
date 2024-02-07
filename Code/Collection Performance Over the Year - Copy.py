@@ -5,11 +5,10 @@ import warnings
 warnings.filterwarnings('ignore')
 from openpyxl import load_workbook
 import os
-import polars
 
 
 today = datetime.today().date()
-last_day = today - timedelta(days=0)
+last_day = today - timedelta(days=2)
 
 td_date = last_day.strftime("%d")
 td_month = last_day.strftime("%m")
@@ -28,6 +27,7 @@ if __name__ == '__main__':
 
 def Ty_paid(paidamount_folder,last_day_fmt):
     typaid = pd.read_excel(paidamount_folder + f"Paidamount_list_{last_day_fmt}.xlsx")
+    typaid['propertycode'] = typaid['propertycode'].replace('1100900002.10.20','1100900002.30')
     typaid['propertycode'] = typaid['propertycode'].astype(float)
     typaid['propertycode'] = typaid['propertycode'].apply("{:.02f}".format)
     typaid.dropna(subset=['propertycode'], how='all', inplace=True)
@@ -71,22 +71,22 @@ finYr2023_24 = newwdd[(newwdd['fin_year_r'] >= 2023) & (newwdd['fin_year_r'] < 2
 
 
 df = pd.concat([finYr2022_23,finYr2023_24],ignore_index=False)
-grpbydf = df.groupby(['receiptdate']).agg(
-    {'propertycode': 'count', 'paidamount': 'sum'}).reset_index()
-grpbydf_Last_year = grpbydf[(grpbydf['receiptdate'] >= datetime(2022, 6, 1)) & (grpbydf['receiptdate'] <= datetime(2022, 6, int(td_date)))]
-grpbydf_Last_year = grpbydf_Last_year.rename(columns= {'paidamount':'paidamount_ly','propertycode':'propertycode_ly'}).reset_index(drop=True)
 
-grpbydf_This_year = grpbydf[grpbydf['receiptdate'] >= datetime(2023, 6, 1)].reset_index(drop=True)
-grpbydf_This_year = grpbydf_This_year.rename(columns= {'paidamount':'paidamount_ty','propertycode':'propertycode_ty'}).reset_index(drop=True)
-grpbydf_This_year[['propertycode_ly','paidamount_ly']] = grpbydf_Last_year[['propertycode_ly','paidamount_ly']]
+# grpbydf = df.groupby(['receiptdate']).agg(
+#     {'propertycode': 'count', 'paidamount': 'sum'}).reset_index()
+# grpbydf_Last_year = grpbydf[(grpbydf['receiptdate'] >= datetime(2022, 6, 1)) & (grpbydf['receiptdate'] <= datetime(2022, 6, int(td_date)))]
+# grpbydf_Last_year = grpbydf_Last_year.rename(columns= {'paidamount':'paidamount_ly','propertycode':'propertycode_ly'}).reset_index(drop=True)
 
-grpbydf_This_year[['paidamount_ty','paidamount_ly']] = grpbydf_This_year[['paidamount_ty','paidamount_ly']]/10000000
+# grpbydf_This_year = grpbydf[grpbydf['receiptdate'] >= datetime(2023, 6, 1)].reset_index(drop=True)
+# grpbydf_This_year = grpbydf_This_year.rename(columns= {'paidamount':'paidamount_ty','propertycode':'propertycode_ty'}).reset_index(drop=True)
+# grpbydf_This_year[['propertycode_ly','paidamount_ly']] = grpbydf_Last_year[['propertycode_ly','paidamount_ly']]
 
-monthwise_df = df.groupby(['fin_month_r',"fin_year_r"]).agg(
-    {'propertycode': 'count', 'paidamount': 'sum'}).reset_index()
+# grpbydf_This_year[['paidamount_ty','paidamount_ly']] = grpbydf_This_year[['paidamount_ty','paidamount_ly']]/10000000
 
+# monthwise_df = df.groupby(['fin_month_r',"fin_year_r"]).agg(
+#     {'propertycode': 'count', 'paidamount': 'sum'}).reset_index()
 
-grpbydf_This_year.to_excel(outpth + "Ly_Ty_Collection.xlsx",index=False)
+# grpbydf_This_year.to_excel(outpth + "Ly_Ty_Collection.xlsx",index=False)
 
 
 yr = [2018, 2019, 2020, 2021, 2022, 2023]

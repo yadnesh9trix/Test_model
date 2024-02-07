@@ -1,4 +1,4 @@
-from selenium import webdriver
+from webdata import webdriver
 from PIL import Image
 import requests
 

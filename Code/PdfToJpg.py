@@ -27,14 +27,16 @@ if __name__ == '__main__':
     else:
         os.mkdir(outpth)
 
-pth = inppath + "PtaxEaseofLiving290723-1.pdf"
+pth = inppath + "859_Sri_Gyaneshwari(Marathi)_Web (2).pdf"
 # pth = inppath + "Ptax Activites.pdf"
 
 pages = convert_from_path(pth,500,poppler_path="C:\Program Files\poppler-23.05.0\Library/bin")
 
-for i in range(len(pages)):
-    pages[i].save(outpth +  str(i) +'.jpg', 'JPEG')
+# for i in range(len(pages)):
+#     pages[i].save(outpth + f"DnyaneshWari_{str(i)}" +'.jpg', 'JPEG')
 
+for i, page in enumerate(pages):
+    page.save(outpth +f"DnyaneshWari_{i}.jpg", 'JPEG')
 
 # from pdf2docx import parse
 # pdf_file = "test.pdf"

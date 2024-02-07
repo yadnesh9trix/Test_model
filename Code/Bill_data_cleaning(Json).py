@@ -8,6 +8,7 @@ import datetime
 import time
 import warnings
 warnings.filterwarnings('ignore')
+import json
 
 #-----------------------------------------------------------------------------------------------------------------------
 ## Define the today's date
@@ -32,7 +33,6 @@ if __name__ == '__main__':
 wout_visitperson = pd.read_excel(inppath + "VisitPerson.xlsx", sheet_name="OG")
 wout_visitperson_list = wout_visitperson['visitingPersonName'].tolist()
 
-import json
 
 with open(inppath + 'propertyconflights_20052023_1558.json',encoding='utf-8') as f:
   data = json.load(f)
